@@ -9,7 +9,6 @@ def generate_noise_image(content_image, noise_ratio = CONFIG.NOISE_RATIO):
     """
     Generates a noisy image by adding random noise to the content_image
     """
-    
     # Generate a random noise_image
     noise_image = np.random.uniform(-20, 20, (1, CONFIG.IMAGE_HEIGHT, CONFIG.IMAGE_WIDTH, CONFIG.COLOR_CHANNELS)).astype('float32')
     

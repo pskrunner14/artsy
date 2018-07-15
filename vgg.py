@@ -12,11 +12,11 @@ class CONFIG:
     NOISE_RATIO = 0.6
     MEANS = np.array([123.68, 116.779, 103.939]).reshape((1,1,1,3)) 
     VGG_MODEL = 'pretrained-model/imagenet-vgg-verydeep-19.mat' # Pick the VGG 19-layer model by from the paper "Very Deep Convolutional Networks for Large-Scale Image Recognition".
-    STYLE_IMAGE = 'data/images/stone_style.jpg' # Style image to use.
-    CONTENT_IMAGE = 'data/images/content300.jpg' # Content image to use.
+    CONTENT_IMAGES_DIR = 'data/images/content/'
+    STYLE_IMAGES_DIR = 'data/images/style/'
     OUTPUT_DIR = 'data/out/'
     
-def load_vgg_model():
+def load_vgg_model(path):
     """
     Returns a model for the purpose of 'painting' the picture.
     Takes only the convolution layer weights and wrap using the TensorFlow
@@ -69,7 +69,7 @@ def load_vgg_model():
         42 is softmax
     """
     
-    vgg = scipy.io.loadmat(CONFIG.VGG_MODEL)
+    vgg = scipy.io.loadmat(path)
 
     vgg_layers = vgg['layers']
     

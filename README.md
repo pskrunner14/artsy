@@ -1,12 +1,23 @@
 # Overview ![Under Development](./data/under-development-orange.svg)
 
-Neural Style Transfer is a fairly exciting and fun application of Deep Learning, as it can generate quite genuine looking artistic transmutations of an ordinary photograph by augmenting onto it the artistic style of any painting of your liking. So essentially, we can train a network to transform any image into a stylized version of it, based on the style of our handpicked image. That is incredible! In case you were wondering, this technology is exactly how apps like [Prisma](https://prisma-ai.com/) work.
+[Trompe l'oeil](https://dictionary.cambridge.org/dictionary/english/trompe-l-oeil) is a Neural Style Transfer Art Generation model that is a fairly exciting and fun application of Deep Learning, as it can generate quite genuine and clever looking artistic transmutations of an ordinary photograph by augmenting onto it the artistic style of any painting of your liking. So essentially, we can train a network to transform any image into a stylized version of it, based on the style of our handpicked image. That is incredible! In case you were wondering, this technology is exactly how apps like [Prisma](https://prisma-ai.com/) work.
 
-Here are a few output examples:
+Here are a few output examples of the “Neckarfront” in Tubingen, Germany in various styles of a few famous impressionist paintings as cited in the NST paper:
 
-![“Neckarfront”, Tubingen, Germany in various styles of different paintings](data/ns1.png)
+![“Neckarfront”, Tubingen, Germany in various styles of different paintings](./data/ns1.png)
 
-!["Mona Lisa" by Leonardo da Vinci](data/ns2.png)
+## Steps
+
+1. Load the style and content images
+1. Randomly initialize the generated image
+1. Load the VGG-19 model with the correct configuration
+1. Build the computation graph:
+    * Run the content image through the VGG-19 model and compute the content cost
+    * Run the style image through the VGG-19 model and compute the style cost
+    * Compute the total cost
+    * Define the optimizer and the learning rate
+1. Initialize and run the graph for a number of iterations: 
+    * Update the generated image at every step
 
 ## Data
 
@@ -30,7 +41,11 @@ Now you are all set up!
 
 ## Results
 
+Content: Arc De Triomphe in Paris, France; Style: "The Starry Night" by Vincent van Gogh
 
+![Arc De Triomphe in Paris, France](./data/images/content/arc_de_triomphe.jpg) ![The Starry Night by Vincent van Gogh](./data/images/style/starry_night_van_gogh.jpg)
+
+<!-- ![Resulting Artwork](./data/images/out/arc_starry_night.png) -->
 
 ## Built With
 
