@@ -41,11 +41,14 @@ Now you are all set up!
 
 ## Results
 
-Content: Arc De Triomphe in Paris, France; Style: "The Starry Night" by Vincent van Gogh
+Content: Arc De Triomphe in Paris, France
+Style: "The Starry Night" by Vincent van Gogh
 
 ![Arc De Triomphe in Paris, France](./data/images/content/arc_de_triomphe_small.jpg) ![The Starry Night by Vincent van Gogh](./data/images/style/starry_night_van_gogh_small.jpg)
 
-<!-- ![Resulting Artwork](./data/images/out/arc_starry_night.png) -->
+Resulting Artwork:
+
+![Resulting Artwork](./data/out/rsz_generated_image-upscaled.jpg)
 
 ## Built With
 
