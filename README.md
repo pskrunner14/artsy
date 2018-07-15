@@ -49,7 +49,7 @@ Style: "The Starry Night" by Vincent van Gogh
 
 Resulting Artwork:
 
-<img src="https://github.com/pskrunner14/trompe-l-oeil/blob/master/data/result_1_output.jpg" alt="Resulting Artwork" width="450" height="340" />
+<img src="https://github.com/pskrunner14/trompe-l-oeil/blob/master/data/result_1_output.jpg" alt="Resulting Artwork" width="450" height="340" style="display: block;margin-left: auto;margin-right: auto;width: 50%;" />
 
 <!-- ![Resulting Artwork](./data/result_1_output.jpg)s -->
 
