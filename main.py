@@ -14,7 +14,7 @@ from utils import *
 def compute_content_cost(a_C, a_G):
 
     # Retrieve dimensions from a_G
-    m, n_H, n_W, n_C = a_G.get_shape().as_list()
+    _, n_H, n_W, n_C = a_G.get_shape().as_list()
     
     # Reshape a_C and a_G
     a_C_unrolled = tf.transpose(tf.reshape(a_C, [n_H * n_W, n_C]))
@@ -33,7 +33,7 @@ def compute_gram_matrix(A):
 def compute_layer_style_cost(a_S, a_G):
 
     # Retrieve dimensions from a_G
-    m, n_H, n_W, n_C = a_G.get_shape().as_list()
+    _, n_H, n_W, n_C = a_G.get_shape().as_list()
     
     # Reshape the images to have them of shape (n_C, n_H*n_W)
     a_S = tf.transpose(tf.reshape(a_S, [n_H * n_W, n_C]))
@@ -89,10 +89,10 @@ def total_cost(J_content, J_style, alpha = 10, beta = 40):
     J = (alpha * J_content) + (beta * J_style)
     return J
 
-content_image = scipy.misc.imread(CONFIG.CONTENT_IMAGES_DIR + 'arc_de_triomphe_small.jpg')
+content_image = scipy.misc.imread(CONFIG.CONTENT_IMAGES_DIR + 'arc_de_triomphe_medium.jpg')
 content_image = reshape_and_normalize_image(content_image)
 
-style_image = scipy.misc.imread(CONFIG.STYLE_IMAGES_DIR + 'starry_night_van_gogh_small.jpg')
+style_image = scipy.misc.imread(CONFIG.STYLE_IMAGES_DIR + 'starry_night_van_gogh_medium.jpg')
 style_image = reshape_and_normalize_image(style_image)
 
 # Reset the graph
@@ -129,7 +129,7 @@ J = total_cost(J_content, J_style)
 optimizer = tf.train.AdamOptimizer(2.0)
 train_step = optimizer.minimize(J)
 
-def model_nn(sess, input_image, num_iterations = 200):
+def model_nn(sess, input_image, num_iterations = 500):
     
     # Initialize global variables
     sess.run(tf.global_variables_initializer())
@@ -145,14 +145,16 @@ def model_nn(sess, input_image, num_iterations = 200):
         # Compute the generated image by running the session on the current model['input']
         generated_image = sess.run(model['input'])
 
-        # Print every 20 iteration.
-        if i%20 == 0:
-            Jt, Jc, Js = sess.run([J, J_content, J_style])
-            print("Iteration " + str(i) + " :")
-            print("total cost = " + str(Jt))
-            print("content cost = " + str(Jc))
-            print("style cost = " + str(Js))
-            
+        Jt, Jc, Js = sess.run([J, J_content, J_style])
+        print("Iteration " + str(i) + " :")
+        print()
+        print("Total cost = " + str(Jt))
+        print("Content cost = " + str(Jc))
+        print("Style cost = " + str(Js))
+        print()
+
+        # Save image every 20 iteration.
+        if i % 20 == 0:
             # save current generated image in the "/output" directory
             save_image(CONFIG.OUTPUT_DIR + str(i) + ".png", generated_image)
     
