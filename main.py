@@ -23,12 +23,12 @@ IMAGE_PAIRS = [
     ('new_york.jpg', 'sunrise_monet.jpg'),
 ]
 
-def model_nn(content_image, style_image, num_iterations = 500):
+def model_nn(content_image_name, style_image_name, num_iterations = 500):
 
-    content_image = scipy.misc.imread(CONFIG.CONTENT_IMAGES_DIR + content_image)
+    content_image = scipy.misc.imread(CONFIG.CONTENT_IMAGES_DIR + content_image_name)
     content_image = reshape_and_normalize_image(content_image)
 
-    style_image = scipy.misc.imread(CONFIG.STYLE_IMAGES_DIR + style_image)
+    style_image = scipy.misc.imread(CONFIG.STYLE_IMAGES_DIR + style_image_name)
     style_image = reshape_and_normalize_image(style_image)
 
     def compute_content_cost(a_C, a_G):
@@ -167,10 +167,11 @@ def model_nn(content_image, style_image, num_iterations = 500):
             print("Style cost = " + str(Js))
             print()
             # save current generated image in the "/output" directory
+            save_image(CONFIG.OUTPUT_DIR + str(content_image_name[: -4]) + '_' + str(style_image_name[: -4])  +  '_' + str(i) + '.jpg', generated_image)
             # save_image(CONFIG.OUTPUT_DIR + str(i) + ".png", generated_image)
     
     # save last generated image
-    save_image(CONFIG.OUTPUT_DIR + content_image + '-' + style_image  +  'gen.jpg', generated_image)
+    save_image(CONFIG.OUTPUT_DIR + str(content_image_name[: -4]) + '_' + str(style_image_name[: -4])  +  '_gen.jpg', generated_image)
     # return generated_image
 
 for content_image, style_image in IMAGE_PAIRS:
