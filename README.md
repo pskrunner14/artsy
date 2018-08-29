@@ -70,6 +70,12 @@ Style: Impression, Sunrise by Claude Monet
    <img src="./data/result_2_output.jpg" width=280 height=250>
 </div>
 
+<br>
+<br>
+
+Content: New York City skyline
+Style: Antibes Seen by Claude Monet
+
 ### Built With
 
 * Python
