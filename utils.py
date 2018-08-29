@@ -1,9 +1,9 @@
 import scipy.misc
+import numpy as np
+
 from PIL import Image
 
 from vgg import CONFIG
-
-import numpy as np
 
 def generate_noise_image(content_image, noise_ratio = CONFIG.NOISE_RATIO):
     """

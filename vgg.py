@@ -1,4 +1,4 @@
-### Part of this code is due to the MatConvNet team and is used to load the parameters of the pretrained VGG19 model in the notebook ###
+""" Part of this code is due to the MatConvNet team and is used to load the parameters of the pretrained VGG19 model """
 
 import scipy.io
 
@@ -11,7 +11,7 @@ class CONFIG:
     COLOR_CHANNELS = 3
     NOISE_RATIO = 0.6
     MEANS = np.array([123.68, 116.779, 103.939]).reshape((1,1,1,3)) 
-    VGG_MODEL = 'pretrained-model/imagenet-vgg-verydeep-19.mat' # Pick the VGG 19-layer model by from the paper "Very Deep Convolutional Networks for Large-Scale Image Recognition".
+    VGG_MODEL = 'model/imagenet-vgg-verydeep-19.mat' # Pick the VGG 19-layer model by from the paper "Very Deep Convolutional Networks for Large-Scale Image Recognition".
     CONTENT_IMAGES_DIR = 'data/images/content/'
     STYLE_IMAGES_DIR = 'data/images/style/'
     OUTPUT_DIR = 'data/out/'
