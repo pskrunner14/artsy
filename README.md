@@ -1,4 +1,4 @@
-# Overview ![Under Development](./data/under-development-orange.svg)
+## Artsy ![Under Development](./data/under-development-orange.svg)
 
 Artsy is a Neural Style Transfer Art Generation model that is a fairly exciting and fun application of Deep Learning, as it can generate quite genuine and clever looking artistic transmutations of an ordinary photograph by augmenting onto it the artistic style of any painting of your liking. So essentially, we can train a network to transform any image into a stylized version of it, based on the style of our handpicked image. That is incredible! In case you were wondering, this technology is exactly how apps like [Prisma](https://prisma-ai.com/) work.
 
@@ -6,7 +6,7 @@ Here are a few output examples of the “Neckarfront” in Tubingen, Germany in 
 
 ![“Neckarfront”, Tubingen, Germany in various styles of different paintings](./data/ns1.png)
 
-## Steps
+### Steps
 
 1. Load the style and content images
 1. Randomly initialize the generated image
@@ -19,7 +19,7 @@ Here are a few output examples of the “Neckarfront” in Tubingen, Germany in 
 1. Initialize and run the graph for a number of iterations: 
     * Update the generated image at every step
 
-## Data
+### Data
 
 *Neural Style Transfer* (NST) uses a previously trained Convolutional Neural Network, and builds on top of that. This concept of using a network trained on a different task (such as *Object Detection and Recognition*) and applying it to a new task is called *Transfer Learning*.
 
@@ -27,33 +27,33 @@ As per the original paper - [A Neural Algorithm of Artistic Style](https://arxiv
 
 The VGG-19 (imagenet-vgg-verydeep-19.mat) model can be downloaded from [here](http://www.vlfeat.org/matconvnet/pretrained/).
 
-## Getting Started
+### Getting Started
 
 In order to be able to generate neural style artistic images, you will need to install the required python packages:
 
 `pip install -r requirements.txt`
 
-Now you can open up a terminal and run the network on your content image:
+Now you can open up a terminal and run the model on your content image:
 
 `python main.py`
 
 Now you are all set up!
 
-## Results
+### Results
 
 Content: Arc De Triomphe in Paris, France
 
 Style: "The Starry Night" by Vincent van Gogh
 
-![Arc De Triomphe in Paris, France and The Starry Night by Vincent van Gogh](./data/result_1_input.jpg)
-
 Resulting Artwork:
 
-<img src="https://github.com/pskrunner14/trompe-l-oeil/blob/master/data/result_1_output.jpg" alt="Resulting Artwork" width="450" height="340" />
+<div align="center">
+   <img src="./data/content/arc_de_triomphe.jpg" width=250 height=250>
+   <img src="./data/style/starry_night_van_gogh.jpg" width=250 height=250>
+   <img src="./data/result_1_output.jpg" width=250 height=250>
+</div>
 
-<!-- ![Resulting Artwork](./data/result_1_output.jpg)s -->
-
-## Built With
+### Built With
 
 * Python
 * TensorFlow
@@ -61,10 +61,10 @@ Resulting Artwork:
 * Matplotlib
 * SciPy
 
-## Authors
+### Authors
 
 Prabhsimran Singh
 
-## License
+### License
 
 This project is licensed under the MIT License - see the LICENSE.md file for details
