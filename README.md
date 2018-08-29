@@ -31,35 +31,42 @@ The VGG-19 (imagenet-vgg-verydeep-19.mat) model can be downloaded from [here](ht
 
 In order to be able to generate neural style artistic images, you will need to install the required python packages:
 
-`pip install -r requirements.txt`
+```
+pip install -r requirements.txt
+```
 
 Now you can open up a terminal and run the model on your content image:
 
-`python main.py`
+```
+python main.py
+```
 
 Now you are all set up!
 
 ### Results
 
 Content: Arc De Triomphe in Paris, France
-
 Style: "The Starry Night" by Vincent van Gogh
 
-Resulting Artwork:
+<div align="center">
+   <img src="./data/images/content/arc_de_triomphe.jpg" width=250 height=250>
+   <img src="./data/images/style/starry_night_van_gogh.jpg" width=250 height=250>
+   <img src="./data/result_1_output.jpg" width=250 height=250>
+</div>
+
+Content: Taj Mahal in Agra, India
+Style: Impression, Sunrise by Claude Monet
 
 <div align="center">
-   <img src="./data/content/arc_de_triomphe.jpg" width=250 height=250>
-   <img src="./data/style/starry_night_van_gogh.jpg" width=250 height=250>
-   <img src="./data/result_1_output.jpg" width=250 height=250>
+   <img src="./data/images/content/taj_mahal.jpg" width=250 height=250>
+   <img src="./data/images/style/sunrise_monet.jpg" width=250 height=250>
+   <img src="./data/result_2_output.jpg" width=250 height=250>
 </div>
 
 ### Built With
 
 * Python
 * TensorFlow
-* NumPy
-* Matplotlib
-* SciPy
 
 ### Authors
 
