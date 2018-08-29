@@ -55,8 +55,8 @@ Style: "The Starry Night" by Vincent van Gogh
    <img src="./data/result_1_output.jpg" width=280 height=250>
 </div>
 
-
-
+<br>
+<br>
 
 Content: Taj Mahal in Agra, India
 
