@@ -46,21 +46,23 @@ Now you are all set up!
 ### Results
 
 Content: Arc De Triomphe in Paris, France
+
 Style: "The Starry Night" by Vincent van Gogh
 
 <div align="center">
-   <img src="./data/images/content/arc_de_triomphe.jpg" width=250 height=250>
-   <img src="./data/images/style/starry_night_van_gogh.jpg" width=250 height=250>
-   <img src="./data/result_1_output.jpg" width=250 height=250>
+   <img src="./data/images/content/arc_de_triomphe.jpg" width=280 height=250>
+   <img src="./data/images/style/starry_night_van_gogh.jpg" width=280 height=250>
+   <img src="./data/result_1_output.jpg" width=250 height=280>
 </div>
 
 Content: Taj Mahal in Agra, India
+
 Style: Impression, Sunrise by Claude Monet
 
 <div align="center">
-   <img src="./data/images/content/taj_mahal.jpg" width=250 height=250>
-   <img src="./data/images/style/sunrise_monet.jpg" width=250 height=250>
-   <img src="./data/result_2_output.jpg" width=250 height=250>
+   <img src="./data/images/content/taj_mahal.jpg" width=280 height=250>
+   <img src="./data/images/style/sunrise_monet.jpg" width=280 height=250>
+   <img src="./data/result_2_output.jpg" width=280 height=250>
 </div>
 
 ### Built With
