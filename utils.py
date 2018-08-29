@@ -5,6 +5,15 @@ from PIL import Image
 
 from vgg import CONFIG
 
+# values for the lambda hyperparam for each layer
+STYLE_LAYERS = [
+    ('conv1_1', 0.2),
+    ('conv2_1', 0.2),
+    ('conv3_1', 0.2),
+    ('conv4_1', 0.2),
+    ('conv5_1', 0.2)
+]
+
 def generate_noise_image(content_image, noise_ratio = CONFIG.NOISE_RATIO):
     """
     Generates a noisy image by adding random noise to the content_image

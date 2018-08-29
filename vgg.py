@@ -14,6 +14,7 @@ class CONFIG:
     VGG_MODEL = 'model/imagenet-vgg-verydeep-19.mat' # Pick the VGG 19-layer model by from the paper "Very Deep Convolutional Networks for Large-Scale Image Recognition".
     CONTENT_IMAGES_DIR = 'data/images/content/'
     STYLE_IMAGES_DIR = 'data/images/style/'
+    OUTPUT_AUX_DIR = 'data/out/auxillary/'
     OUTPUT_DIR = 'data/out/'
     
 def load_vgg_model(path):
