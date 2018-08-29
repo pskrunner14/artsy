@@ -74,6 +74,7 @@ Style: Impression, Sunrise by Claude Monet
 <br>
 
 Content: New York City skyline
+
 Style: Antibes Seen by Claude Monet
 
 <div align="center">
