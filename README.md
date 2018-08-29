@@ -37,10 +37,10 @@ In order to be able to generate neural style artistic images, you will need to i
 pip install -r requirements.txt
 ```
 
-Now you can open up a terminal and run the model on your content image:
+Now you can open up a terminal and run the model on your images:
 
 ```
-python main.py
+python main.py --num-iters 500 --save-every 50
 ```
 
 Now you are all set up!
