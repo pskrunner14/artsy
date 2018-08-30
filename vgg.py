@@ -1,17 +1,19 @@
 """ Part of this code is due to the MatConvNet team and is used to load the parameters of the pretrained VGG19 model """
 
-import scipy.io
+import scipy.io as io
 
 import numpy as np
 import tensorflow as tf
 
 class CONFIG:
-    IMAGE_WIDTH = 800#400
-    IMAGE_HEIGHT = 600#300
+    IMAGE_WIDTH = 800
+    IMAGE_HEIGHT = 600
     COLOR_CHANNELS = 3
     NOISE_RATIO = 0.6
     MEANS = np.array([123.68, 116.779, 103.939]).reshape((1,1,1,3)) 
-    VGG_MODEL = 'model/imagenet-vgg-verydeep-19.mat' # Pick the VGG 19-layer model by from the paper "Very Deep Convolutional Networks for Large-Scale Image Recognition".
+    # Pick the VGG 19-layer model from the authors of the paper 
+    # "Very Deep Convolutional Networks for Large-Scale Image Recognition".
+    VGG_MODEL = 'model/imagenet-vgg-verydeep-19.mat' 
     CONTENT_IMAGES_DIR = 'data/images/content/'
     STYLE_IMAGES_DIR = 'data/images/style/'
     OUTPUT_AUX_DIR = 'data/out/auxillary/'
@@ -70,7 +72,7 @@ def load_vgg_model(path):
         42 is softmax
     """
     
-    vgg = scipy.io.loadmat(path)
+    vgg = io.loadmat(path)
 
     vgg_layers = vgg['layers']
     

@@ -44,37 +44,34 @@ def read_image(DIR, image_name):
     return reshape_and_normalize_image(scipy.misc.imread(DIR + image_name))
 
 def compute_content_cost(a_C, a_G):
-        # Retrieve dimensions from a_G
         _, n_H, n_W, n_C = a_G.get_shape().as_list()
-        # Reshape a_C and a_G
+        
         a_C_unrolled = tf.transpose(tf.reshape(a_C, [n_H * n_W, n_C]))
         a_G_unrolled = tf.transpose(tf.reshape(a_G, [n_H * n_W, n_C]))
-        # compute the cost
+
         J_content = tf.reduce_sum(tf.square(tf.subtract(a_C_unrolled, a_G_unrolled)))
         J_content *= (1 / (4 * n_H * n_W * n_C))
 
         return J_content
 
 def compute_gram_matrix(A):
-    return tf.matmul(A, tf.transpose(A))
+    return tf.matmul(A, A, transpose_b=True)
 
 def compute_layer_style_cost(a_S, a_G):
-    # Retrieve dimensions from a_G
     _, n_H, n_W, n_C = a_G.get_shape().as_list()
-    # Reshape the images to have them of shape (n_C, n_H*n_W)
+    
     a_S = tf.transpose(tf.reshape(a_S, [n_H * n_W, n_C]))
     a_G = tf.transpose(tf.reshape(a_G, [n_H * n_W, n_C]))
-    # Computing gram_matrices for both images S and G
+    
     GS = compute_gram_matrix(a_S)
     GG = compute_gram_matrix(a_G)
-    # Computing the loss
+
     J_style_layer = tf.reduce_sum(tf.square(tf.subtract(GS, GG))) 
     J_style_layer *= (1 / (4 * np.square(n_H * n_W) * np.square(n_C)))
     
     return J_style_layer
 
 def compute_style_cost(sess, model, STYLE_LAYERS):
-    # initialize the overall style cost
     J_style = 0
 
     for layer_name, coeff in STYLE_LAYERS:
@@ -85,9 +82,7 @@ def compute_style_cost(sess, model, STYLE_LAYERS):
         # and isn't evaluated yet. Later in the code, we'll assign the image G as the model input, so that
         # when we run the session, this will be the activations drawn from the appropriate layer, with G as input.
         a_G = out
-        # Compute style_cost for the current layer
         J_style_layer = compute_layer_style_cost(a_S, a_G)
-        # Add coeff * J_style_layer of this layer to overall style cost
         J_style += coeff * J_style_layer
 
     return J_style
@@ -100,10 +95,8 @@ def model_nn(content_image_name, style_image_name, iterations=500, save_every=50
     content_image = read_image(CONFIG.CONTENT_IMAGES_DIR, content_image_name)
     style_image = read_image(CONFIG.STYLE_IMAGES_DIR, style_image_name)
 
-    # Reset the graph
     tf.reset_default_graph()
 
-    # Start tensorflow session
     with tf.Session() as sess:
 
         # Now, we initialize the "generated" image as a noisy image created from the content_image. 
@@ -114,7 +107,6 @@ def model_nn(content_image_name, style_image_name, iterations=500, save_every=50
 
         model = load_vgg_model(CONFIG.VGG_MODEL)
 
-        # Compute the content cost
         # Assign the content image to be the input of the VGG model.  
         sess.run(model['input'].assign(content_image))
         # Select the output tensor of layer conv4_2
@@ -122,11 +114,12 @@ def model_nn(content_image_name, style_image_name, iterations=500, save_every=50
         # Set a_C to be the hidden layer activation from the layer we have selected
         a_C = sess.run(out)
         a_G = out
+        # Compute the content cost
         content_cost = compute_content_cost(a_C, a_G)
 
-        # Compute the style cost
         # Assign the input of the model to be the "style" image 
         sess.run(model['input'].assign(style_image))
+        # Compute the style cost
         style_cost = compute_style_cost(sess, model, STYLE_LAYERS)
 
         # Define the cost and optimizer
@@ -140,13 +133,11 @@ def model_nn(content_image_name, style_image_name, iterations=500, save_every=50
         sess.run(model['input'].assign(generated_image))
         
         for i in range(1, iterations + 1):
-        
-            # Run the session on the train_step to minimize the total cost
             sess.run(train_step)
+
             # Compute the generated image by running the session on the current model['input']
             generated_image = sess.run(model['input'])
 
-            # Save image every 50 iteration.
             if i % save_every == 0:
                 Jt, Jc, Js = sess.run([cost, content_cost, style_cost])
                 logging.info("Iteration {}\n".format(i))
