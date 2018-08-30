@@ -30,18 +30,17 @@ def parse_arguments():
     return parser.parse_args()
 
 IMAGE_PAIRS = [
+    ('village.jpg', 'lois_griffel.jpg'),
     ('taj_mahal.jpg',  'sunrise_monet.jpg'),
+    ('arc_de_triomphe.jpg', 'starry_night.jpg'),
+    ('new_york.jpg', 'sunrise_monet.jpg'),
     ('stonehenge.jpg', 'impression_1.jpg'),
     ('new_york.jpg', 'impression_2.jpg'),
     ('stone_henge.jpg', 'sunset_at_ivry.jpg'),
     ('arc_de_triomphe.jpg', 'impression_1.jpg'),
     ('arc_de_triomphe.jpg', 'impression_2.jpg'),
-    ('arc_de_triomphe.jpg', 'lois_griffel.jpg'),
-    ('new_york.jpg', 'sunrise_monet.jpg')
+    ('arc_de_triomphe.jpg', 'lois_griffel.jpg')
 ]
-
-def read_image(DIR, image_name):
-    return reshape_and_normalize_image(scipy.misc.imread(DIR + image_name))
 
 def compute_content_cost(a_C, a_G):
         _, n_H, n_W, n_C = a_G.get_shape().as_list()
@@ -90,10 +89,15 @@ def compute_style_cost(sess, model, STYLE_LAYERS):
 def total_cost(J_content, J_style, alpha = 10, beta = 40):
     return alpha * J_content + beta * J_style
 
+def read_image(DIR, image_name, image_shape=None):
+    return reshape_and_normalize_image(scipy.misc.imread(DIR + image_name), image_shape=image_shape)
+
 def model_nn(content_image_name, style_image_name, iterations=500, save_every=50):
 
+    # Reshape and Normalize images
     content_image = read_image(CONFIG.CONTENT_IMAGES_DIR, content_image_name)
-    style_image = read_image(CONFIG.STYLE_IMAGES_DIR, style_image_name)
+    _, height, width, _ = content_image.shape
+    style_image = read_image(CONFIG.STYLE_IMAGES_DIR, style_image_name, (height, width))
 
     tf.reset_default_graph()
 
@@ -124,7 +128,7 @@ def model_nn(content_image_name, style_image_name, iterations=500, save_every=50
 
         # Define the cost and optimizer
         cost = total_cost(content_cost, style_cost)
-        optimizer = tf.train.AdamOptimizer(2.0)
+        optimizer = tf.train.AdamOptimizer(1.0)
         train_step = optimizer.minimize(cost)
         
         sess.run(tf.global_variables_initializer())
