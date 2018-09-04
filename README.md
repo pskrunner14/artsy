@@ -1,4 +1,5 @@
-# Artsy [![Maintainability](https://api.codeclimate.com/v1/badges/ca3cc71763ec03d015cd/maintainability)](https://codeclimate.com/github/pskrunner14/artsy/maintainability) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e17dfa7e7841450e8c234a1ee1685cf1)](https://app.codacy.com/app/pskrunner14/artsy?utm_source=github.com&utm_medium=referral&utm_content=pskrunner14/artsy&utm_campaign=Badge_Grade_Settings)
+# Artsy
+[![Maintainability](https://api.codeclimate.com/v1/badges/ca3cc71763ec03d015cd/maintainability)](https://codeclimate.com/github/pskrunner14/artsy/maintainability) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e17dfa7e7841450e8c234a1ee1685cf1)](https://app.codacy.com/app/pskrunner14/artsy?utm_source=github.com&utm_medium=referral&utm_content=pskrunner14/artsy&utm_campaign=Badge_Grade_Settings)
 
 Artsy is a Neural Style Transfer Art Generation implementation in less than 200 lines of code using TensorFlow. 
 
