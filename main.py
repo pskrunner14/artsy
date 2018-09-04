@@ -24,16 +24,12 @@ IMAGE_PAIRS = [
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='NST using tensorflow [configuration]')
-
     parser.add_argument('--num-iters', type=int, default=500, dest='iterations',
                         help='Number of iterations for training')
-
     parser.add_argument('--save-every', type=int, default=50, dest='save_every',
                         help='Iteration interval after which to save the generated image')
-    
     parser.add_argument('--log-level', type=str, default='info', dest='log_level',
                         help='Logging level')
-
     return parser.parse_args()
 
 def compute_content_cost(a_C, a_G):
@@ -59,7 +55,7 @@ def compute_layer_style_cost(a_S, a_G):
     GS = compute_gram_matrix(a_S)
     GG = compute_gram_matrix(a_G)
 
-    J_style_layer = tf.reduce_sum(tf.square(tf.subtract(GS, GG))) 
+    J_style_layer = tf.reduce_sum(tf.square(tf.subtract(GS, GG)))
     J_style_layer *= (1 / (4 * np.square(n_H * n_W) * np.square(n_C)))
     
     return J_style_layer
@@ -85,6 +81,12 @@ def total_cost(J_content, J_style, alpha = 10, beta = 40):
 
 def read_image(DIR, image_name, image_shape=None):
     return reshape_and_normalize_image(scipy.misc.imread(DIR + image_name), image_shape=image_shape)
+
+def log_results(iteration, costs):
+    logging.info("Iteration {}\n".format(iteration))
+    logging.info("Total cost: {:.4f}".format(costs[0]))
+    logging.info("Content cost: {:.4f}".format(costs[1]))
+    logging.info("Style cost: {:.4f}\n".format(costs[2]))
 
 class NeuralStyleTransfer():
 
@@ -130,7 +132,7 @@ class NeuralStyleTransfer():
 
             if i % self.save_every == 0:
                 Jt, Jc, Js = sess.run([cost, content_cost, style_cost])
-                self._log_results(i, [Jt, Jc, Js])
+                log_results(i, [Jt, Jc, Js])
                 self._save_image(generated_image, iteration=i)
 
         return generated_image
@@ -165,12 +167,6 @@ class NeuralStyleTransfer():
         
         self._save_image(generated_image)
         return generated_image
-
-    def _log_results(self, iteration, costs):
-        logging.info("Iteration {}\n".format(iteration))
-        logging.info("Total cost: {:.4f}".format(costs[0]))
-        logging.info("Content cost: {:.4f}".format(costs[1]))
-        logging.info("Style cost: {:.4f}\n".format(costs[2]))
 
     def _save_image(self, generate_image, iteration=None):
         if iteration is None:
