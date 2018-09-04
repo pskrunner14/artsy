@@ -1,4 +1,4 @@
-## Artsy
+# Artsy [![Maintainability](https://api.codeclimate.com/v1/badges/ca3cc71763ec03d015cd/maintainability)](https://codeclimate.com/github/pskrunner14/artsy/maintainability)
 
 Artsy is a Neural Style Transfer Art Generation implementation in less than 200 lines of code using TensorFlow. 
 
@@ -8,7 +8,7 @@ Here are a few output examples of the “Neckarfront” in Tubingen, Germany in 
 
 ![“Neckarfront”, Tubingen, Germany in various styles of different paintings](./data/ns1.png)
 
-### Steps
+## Steps
 
 1. Load the style and content images
 1. Randomly initialize the generated image
@@ -21,7 +21,7 @@ Here are a few output examples of the “Neckarfront” in Tubingen, Germany in 
 1. Initialize and run the graph for a number of iterations: 
     * Update the generated image at every step
 
-### Data
+## Data
 
 *Neural Style Transfer* (NST) uses a previously trained Convolutional Neural Network, and builds on top of that. This concept of using a network trained on a different task (such as *Object Detection and Recognition*) and applying it to a new task is called *Transfer Learning*.
 
@@ -29,7 +29,7 @@ As per the original paper - [A Neural Algorithm of Artistic Style](https://arxiv
 
 The VGG-19 (imagenet-vgg-verydeep-19.mat) model can be downloaded from [here](http://www.vlfeat.org/matconvnet/pretrained/).
 
-### Getting Started
+## Getting Started
 
 In order to be able to generate neural style artistic images, you will need to install the required python packages:
 
@@ -45,7 +45,7 @@ python main.py --num-iters 500 --save-every 50
 
 Now you are all set up!
 
-### Results
+## Results
 
 Content: Arc De Triomphe in Paris, France
 
@@ -83,15 +83,7 @@ Style: Antibes Seen by Claude Monet
    <img src="./data/result_3_output.jpg" width=280 height=250>
 </div>
 
-### Built With
+## Built With
 
 * Python
 * TensorFlow
-
-### Authors
-
-Prabhsimran Singh
-
-### License
-
-This project is licensed under the MIT License - see the LICENSE.md file for details
