@@ -1,3 +1,4 @@
+import os
 import argparse
 import logging
 import scipy.io
@@ -87,7 +88,9 @@ def read_image(DIR, image_name, image_shape=None):
 
 class NeuralStyleTransfer():
 
-    def __init__(self, content_image_name, style_image_name, iterations=1500, save_every=50):
+    def __init__(self, content_image_name=None, style_image_name=None, iterations=1500, save_every=50):
+        if content_image_name is None or style_image_name is None:
+            raise UserWarning('Image names should not be empty!')
         self.content_image_name = content_image_name[: -4]
         self.style_image_name = style_image_name[: -4]
         self.iterations = iterations
@@ -127,11 +130,7 @@ class NeuralStyleTransfer():
 
             if i % self.save_every == 0:
                 Jt, Jc, Js = sess.run([cost, content_cost, style_cost])
-                logging.info("Iteration {}\n".format(i))
-                logging.info("Total cost: {:.4f}".format(Jt))
-                logging.info("Content cost: {:.4f}".format(Jc))
-                logging.info("Style cost: {:.4f}\n".format(Js))
-
+                self._log_results(i, [Jt, Jc, Js])
                 self._save_image(generated_image, iteration=i)
 
         return generated_image
@@ -167,6 +166,12 @@ class NeuralStyleTransfer():
         self._save_image(generated_image)
         return generated_image
 
+    def _log_results(self, iteration, costs):
+        logging.info("Iteration {}\n".format(iteration))
+        logging.info("Total cost: {:.4f}".format(costs[0]))
+        logging.info("Content cost: {:.4f}".format(costs[1]))
+        logging.info("Style cost: {:.4f}\n".format(costs[2]))
+
     def _save_image(self, generate_image, iteration=None):
         if iteration is None:
             image_path = '{}{}_{}_gen.jpg'.format(CONFIG.OUTPUT_DIR, 
@@ -177,6 +182,11 @@ class NeuralStyleTransfer():
         save_image(image_path, generate_image)
 
 def main():
+    
+    # Create auxillary output directory if it does'nt exist
+    if not os.path.isdir(CONFIG.OUTPUT_AUX_DIR):
+        os.mkdir(CONFIG.OUTPUT_AUX_DIR)
+
     args = parse_arguments()
 
     LOG_FORMAT = '%(levelname)s %(message)s'
