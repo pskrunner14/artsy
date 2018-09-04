@@ -5,6 +5,15 @@ import scipy.io as io
 import numpy as np
 import tensorflow as tf
 
+# values for the lambda hyperparam for each layer
+STYLE_LAYERS = [
+    ('conv1_1', 0.2),
+    ('conv2_1', 0.2),
+    ('conv3_1', 0.2),
+    ('conv4_1', 0.2),
+    ('conv5_1', 0.2)
+]
+
 class CONFIG:
     IMAGE_WIDTH = 800
     IMAGE_HEIGHT = 600
@@ -18,8 +27,53 @@ class CONFIG:
     STYLE_IMAGES_DIR = 'data/images/style/'
     OUTPUT_AUX_DIR = 'data/out/auxillary/'
     OUTPUT_DIR = 'data/out/'
+
+vgg = io.loadmat(CONFIG.VGG_MODEL)
+
+vgg_layers = vgg['layers']
+
+def _weights(layer, expected_layer_name):
+    """
+    Return the weights and bias from the VGG model for a given layer.
+    """
+    wb = vgg_layers[0][layer][0][0][2]
+    W = wb[0][0]
+    b = wb[0][1]
+    layer_name = vgg_layers[0][layer][0][0][0][0]
+    assert layer_name == expected_layer_name
+    return W, b
+
+def _relu(conv2d_layer):
+    """
+    Return the RELU function wrapped over a TensorFlow layer. Expects a
+    Conv2d layer input.
+    """
+    return tf.nn.relu(conv2d_layer)
+
+def _conv2d(prev_layer, layer, layer_name):
+    """
+    Return the Conv2D layer using the weights, biases from the VGG
+    model at 'layer'.
+    """
+    W, b = _weights(layer, layer_name)
+    W = tf.constant(W)
+    b = tf.constant(np.reshape(b, (b.size)))
+    return tf.nn.conv2d(prev_layer, filter=W, strides=[1, 1, 1, 1], padding='SAME') + b
+
+def _conv2d_relu(prev_layer, layer, layer_name):
+    """
+    Return the Conv2D + RELU layer using the weights, biases from the VGG
+    model at 'layer'.
+    """
+    return _relu(_conv2d(prev_layer, layer, layer_name))
+
+def _avgpool(prev_layer):
+    """
+    Return the AveragePooling layer.
+    """
+    return tf.nn.avg_pool(prev_layer, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
     
-def load_vgg_model(path):
+def load_vgg_model():
     """
     Returns a model for the purpose of 'painting' the picture.
     Takes only the convolution layer weights and wrap using the TensorFlow
@@ -71,51 +125,6 @@ def load_vgg_model(path):
         41 is fullyconnected (1, 1, 4096, 1000)
         42 is softmax
     """
-    
-    vgg = io.loadmat(path)
-
-    vgg_layers = vgg['layers']
-    
-    def _weights(layer, expected_layer_name):
-        """
-        Return the weights and bias from the VGG model for a given layer.
-        """
-        wb = vgg_layers[0][layer][0][0][2]
-        W = wb[0][0]
-        b = wb[0][1]
-        layer_name = vgg_layers[0][layer][0][0][0][0]
-        assert layer_name == expected_layer_name
-        return W, b
-
-    def _relu(conv2d_layer):
-        """
-        Return the RELU function wrapped over a TensorFlow layer. Expects a
-        Conv2d layer input.
-        """
-        return tf.nn.relu(conv2d_layer)
-
-    def _conv2d(prev_layer, layer, layer_name):
-        """
-        Return the Conv2D layer using the weights, biases from the VGG
-        model at 'layer'.
-        """
-        W, b = _weights(layer, layer_name)
-        W = tf.constant(W)
-        b = tf.constant(np.reshape(b, (b.size)))
-        return tf.nn.conv2d(prev_layer, filter=W, strides=[1, 1, 1, 1], padding='SAME') + b
-
-    def _conv2d_relu(prev_layer, layer, layer_name):
-        """
-        Return the Conv2D + RELU layer using the weights, biases from the VGG
-        model at 'layer'.
-        """
-        return _relu(_conv2d(prev_layer, layer, layer_name))
-
-    def _avgpool(prev_layer):
-        """
-        Return the AveragePooling layer.
-        """
-        return tf.nn.avg_pool(prev_layer, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 
     # Constructs the graph model.
     graph = {}

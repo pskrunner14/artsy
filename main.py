@@ -1,19 +1,25 @@
-import os
-import sys
-
 import argparse
 import logging
 import scipy.io
 import scipy.misc
-import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
-from matplotlib.pyplot import imshow
-from PIL import Image
+from vgg import load_vgg_model, CONFIG, STYLE_LAYERS
+from utils import generate_noise_image, reshape_and_normalize_image, save_image
 
-from vgg import load_vgg_model, CONFIG
-from utils import *
+IMAGE_PAIRS = [
+    ('village.jpg', 'lois_griffel.jpg'),
+    ('taj_mahal.jpg',  'sunrise_monet.jpg'),
+    ('arc_de_triomphe.jpg', 'starry_night.jpg'),
+    ('new_york.jpg', 'sunrise_monet.jpg'),
+    ('stone_henge.jpg', 'impression_1.jpg'),
+    ('new_york.jpg', 'impression_2.jpg'),
+    ('stone_henge.jpg', 'sunset_at_ivry.jpg'),
+    ('arc_de_triomphe.jpg', 'impression_1.jpg'),
+    ('arc_de_triomphe.jpg', 'impression_2.jpg'),
+    ('arc_de_triomphe.jpg', 'lois_griffel.jpg')
+]
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='NST using tensorflow [configuration]')
@@ -28,19 +34,6 @@ def parse_arguments():
                         help='Logging level')
 
     return parser.parse_args()
-
-IMAGE_PAIRS = [
-    ('village.jpg', 'lois_griffel.jpg'),
-    ('taj_mahal.jpg',  'sunrise_monet.jpg'),
-    ('arc_de_triomphe.jpg', 'starry_night.jpg'),
-    ('new_york.jpg', 'sunrise_monet.jpg'),
-    ('stonehenge.jpg', 'impression_1.jpg'),
-    ('new_york.jpg', 'impression_2.jpg'),
-    ('stone_henge.jpg', 'sunset_at_ivry.jpg'),
-    ('arc_de_triomphe.jpg', 'impression_1.jpg'),
-    ('arc_de_triomphe.jpg', 'impression_2.jpg'),
-    ('arc_de_triomphe.jpg', 'lois_griffel.jpg')
-]
 
 def compute_content_cost(a_C, a_G):
         _, n_H, n_W, n_C = a_G.get_shape().as_list()
@@ -92,39 +85,32 @@ def total_cost(J_content, J_style, alpha = 10, beta = 40):
 def read_image(DIR, image_name, image_shape=None):
     return reshape_and_normalize_image(scipy.misc.imread(DIR + image_name), image_shape=image_shape)
 
-def model_nn(content_image_name, style_image_name, iterations=500, save_every=50):
+class NeuralStyleTransfer():
 
-    # Reshape and Normalize images
-    content_image = read_image(CONFIG.CONTENT_IMAGES_DIR, content_image_name)
-    _, height, width, _ = content_image.shape
-    style_image = read_image(CONFIG.STYLE_IMAGES_DIR, style_image_name, (height, width))
+    def __init__(self, content_image_name, style_image_name, iterations=1500, save_every=50):
+        self.content_image_name = content_image_name[: -4]
+        self.style_image_name = style_image_name[: -4]
+        self.iterations = iterations
+        self.save_every = save_every
 
-    tf.reset_default_graph()
+        self.model = load_vgg_model()
+        # self.content_image, self.style_image = None, None
+        self._preprocess_images(content_image_name, style_image_name)
+        
+    def _preprocess_images(self, content_image_name, style_image_name):
+        # Reshape and Normalize images
+        self.content_image = read_image(CONFIG.CONTENT_IMAGES_DIR, content_image_name)
+        _, height, width, _ = self.content_image.shape
+        self.style_image = read_image(CONFIG.STYLE_IMAGES_DIR, style_image_name, (height, width))
 
-    with tf.Session() as sess:
+    def _train(self, sess, train_step):
+        sess.run(train_step)
+        # Compute the generated image by running the session on the current model['input']
+        return sess.run(self.model['input'])
 
-        # Now, we initialize the "generated" image as a noisy image created from the content_image. 
-        # By initializing the pixels of the generated image to be mostly noise but still slightly 
-        # correlated with the content image, this will help the content of the "generated" image 
-        # more rapidly match the content of the "content" image. 
-        generated_image = generate_noise_image(content_image)
+    def _train_iters(self, sess, costs, noise_image):
 
-        model = load_vgg_model(CONFIG.VGG_MODEL)
-
-        # Assign the content image to be the input of the VGG model.  
-        sess.run(model['input'].assign(content_image))
-        # Select the output tensor of layer conv4_2
-        out = model['conv4_2']
-        # Set a_C to be the hidden layer activation from the layer we have selected
-        a_C = sess.run(out)
-        a_G = out
-        # Compute the content cost
-        content_cost = compute_content_cost(a_C, a_G)
-
-        # Assign the input of the model to be the "style" image 
-        sess.run(model['input'].assign(style_image))
-        # Compute the style cost
-        style_cost = compute_style_cost(sess, model, STYLE_LAYERS)
+        content_cost, style_cost = costs
 
         # Define the cost and optimizer
         cost = total_cost(content_cost, style_cost)
@@ -134,29 +120,61 @@ def model_nn(content_image_name, style_image_name, iterations=500, save_every=50
         sess.run(tf.global_variables_initializer())
 
         # Run the noisy input image (initial generated image) through the model..
-        sess.run(model['input'].assign(generated_image))
+        sess.run(self.model['input'].assign(noise_image))
         
-        for i in range(1, iterations + 1):
-            sess.run(train_step)
+        for i in range(1, self.iterations + 1):
+            generated_image = self._train(sess, train_step)
 
-            # Compute the generated image by running the session on the current model['input']
-            generated_image = sess.run(model['input'])
-
-            if i % save_every == 0:
+            if i % self.save_every == 0:
                 Jt, Jc, Js = sess.run([cost, content_cost, style_cost])
                 logging.info("Iteration {}\n".format(i))
                 logging.info("Total cost: {:.4f}".format(Jt))
                 logging.info("Content cost: {:.4f}".format(Jc))
                 logging.info("Style cost: {:.4f}\n".format(Js))
 
-                image_path = '{}{}_{}_{}.jpg'.format(CONFIG.OUTPUT_AUX_DIR, 
-                            content_image_name[: -4], style_image_name[: -4], i)
-                save_image(image_path, generated_image)
-    
-    image_path = '{}{}_{}_gen.jpg'.format(CONFIG.OUTPUT_DIR, 
-                content_image_name[: -4], style_image_name[: -4])
-    save_image(image_path, generated_image)
-    return generated_image
+                self._save_image(generated_image, iteration=i)
+
+        return generated_image
+
+    def generate_image(self):
+
+        with tf.Session() as sess:
+            # Now, we initialize the "generated" image as a noisy image created from the content_image. 
+            # By initializing the pixels of the generated image to be mostly noise but still slightly 
+            # correlated with the content image, this will help the content of the "generated" image 
+            # more rapidly match the content of the "content" image. 
+            noise_image = generate_noise_image(self.content_image)
+
+            # Assign the content image to be the input of the VGG model.  
+            sess.run(self.model['input'].assign(self.content_image))
+            # Select the output tensor of layer conv4_2
+            out = self.model['conv4_2']
+            # Set a_C to be the hidden layer activation from the layer we have selected
+            a_C = sess.run(out)
+            a_G = out
+            # Compute the content cost
+            content_cost = compute_content_cost(a_C, a_G)
+
+            # Assign the input of the model to be the "style" image 
+            sess.run(self.model['input'].assign(self.style_image))
+            # Compute the style cost
+            style_cost = compute_style_cost(sess, self.model, STYLE_LAYERS)
+
+            generated_image = self._train_iters(sess, (content_cost, style_cost), noise_image)
+
+        tf.reset_default_graph()
+        
+        self._save_image(generated_image)
+        return generated_image
+
+    def _save_image(self, generate_image, iteration=None):
+        if iteration is None:
+            image_path = '{}{}_{}_gen.jpg'.format(CONFIG.OUTPUT_DIR, 
+                        self.content_image_name, self.style_image_name)
+        else:
+            image_path = '{}{}_{}_{}.jpg'.format(CONFIG.OUTPUT_AUX_DIR, 
+                        self.content_image_name, self.style_image_name, iteration)
+        save_image(image_path, generate_image)
 
 def main():
     args = parse_arguments()
@@ -166,7 +184,9 @@ def main():
 
     for content_image, style_image in IMAGE_PAIRS:
         print('For content: {} and style: {}\n'.format(content_image, style_image))
-        model_nn(content_image, style_image, iterations=args.iterations, save_every=args.save_every)
+        nst_model = NeuralStyleTransfer(content_image, style_image, 
+                    iterations=args.iterations, save_every=args.save_every)
+        _ = nst_model.generate_image()
 
 if __name__ == '__main__':
     try:
